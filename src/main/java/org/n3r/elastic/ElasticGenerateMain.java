@@ -113,17 +113,17 @@ public class ElasticGenerateMain {
                 return false;
             }
 
-            if (ElasticArgs.FILE_ARG.equals(args[i])) {
+            if (ElasticArgs.FILE_ARG.equalsIgnoreCase(args[i])) {
                 generateFilePath = args[i + 1];
-            } else if (ElasticArgs.FILE_COUNT_ARG.equals(args[i])) {
+            } else if (ElasticArgs.FILE_COUNT_ARG.equalsIgnoreCase(args[i])) {
                 fileCount = toInteger(args[i + 1], fileCount);
-            } else if (ElasticArgs.KEY_COUNT_ARG.equals(args[i])) {
+            } else if (ElasticArgs.KEY_COUNT_ARG.equalsIgnoreCase(args[i])) {
                 keyCount = toInteger(args[i + 1], keyCount);
-            } else if (ElasticArgs.ID_REPEAT_ARG.equals(args[i])) {
+            } else if (ElasticArgs.ID_REPEAT_ARG.equalsIgnoreCase(args[i])) {
                 idRepeat = toInteger(args[i + 1], idRepeat);
-            } else if (ElasticArgs.KEY_REPEAT_ARG.equals(args[i])) {
+            } else if (ElasticArgs.KEY_REPEAT_ARG.equalsIgnoreCase(args[i])) {
                 keyRepeat = toInteger(args[i + 1], keyRepeat);
-            } else if (ElasticArgs.KEY_NAME_ARG.equals(args[i])) {
+            } else if (ElasticArgs.KEY_NAME_ARG.equalsIgnoreCase(args[i])) {
                 keyName = toStr(args[i + 1], keyName);
             }
         }

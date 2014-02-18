@@ -75,9 +75,9 @@ public class ElasticIndexMain {
                 return false;
             }
 
-            if (ElasticArgs.FILE_ARG.equals(args[i])) {
+            if (ElasticArgs.FILE_ARG.equalsIgnoreCase(args[i])) {
                 srcFilePathPattern = args[i + 1];
-            } else if (ElasticArgs.CONF_ARG.equals(args[i])) {
+            } else if (ElasticArgs.CONF_ARG.equalsIgnoreCase(args[i])) {
                 extendConfigFile = args[i + 1];
             }
         }
