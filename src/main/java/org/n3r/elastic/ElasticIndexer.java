@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 
 import org.n3r.config.impl.DefaultConfigable;
 import org.n3r.config.impl.PropertiesConfigable;
+import org.n3r.config.impl.PropsConfigable;
 import org.n3r.core.lang.Pair;
 import org.n3r.elastic.iface.FileLineReader;
 import org.n3r.elastic.thread.ElasticThread;
@@ -34,6 +35,7 @@ public class ElasticIndexer {
             Resource[] srcResources = ElasticUtils.getFileResources(srcFilePathPattern);
             for (Resource src : srcResources) {
                 pool.execute(new ElasticThread().setSrcFilePath(src.getFile().getAbsolutePath())
+                        .setElasticCluster(getConfigStr("elasticCluster"))
                         .setElasticHost(getConfigStr("elasticHost"))
                         .setElasticPort(getConfigInt("elasticPort"))
                         .setElasticIndex(getConfigStr("elasticIndex"))
@@ -90,7 +92,8 @@ public class ElasticIndexer {
         if (extendConfigFile != null) {
             Resource extRes = ElasticUtils.getFileResource(extendConfigFile);
             if (extRes == null) return true;
-            extConf = new PropertiesConfigable(extRes);
+            extConf = extRes.getFilename().endsWith(".properties") ? new PropertiesConfigable(extRes) :
+                extRes.getFilename().endsWith(".props") ? new PropsConfigable(extRes) : new DefaultConfigable();
         }
 
         return true;

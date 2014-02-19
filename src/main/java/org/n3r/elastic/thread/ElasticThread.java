@@ -10,8 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.n3r.core.lang.Pair;
 import org.n3r.elastic.iface.FileLineReader;
@@ -19,13 +19,16 @@ import org.n3r.elastic.utils.TimeLagUtils;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
+
 public class ElasticThread implements Runnable {
+
+    private String elasticCluster = getStr("elasticCluster");
 
     private String elasticHost = getStr("elasticHost");
 
     private int elasticPort = getInt("elasticPort");
 
-    private Client elasticClient;
+    private TransportClient elasticClient;
 
     private String elasticIndex = getStr("elasticIndex");
 
@@ -44,7 +47,8 @@ public class ElasticThread implements Runnable {
     public void run() {
         Date begin = new Date();
         System.out.println("处理数据文件: " + srcFilePath + " 开始.");
-        elasticClient = new TransportClient().addTransportAddress(new InetSocketTransportAddress(elasticHost, elasticPort));
+        elasticClient = new TransportClient(ImmutableSettings.settingsBuilder().put("cluster.name", elasticCluster).build());
+        elasticClient.addTransportAddress(new InetSocketTransportAddress(elasticHost, elasticPort));
         System.out.println("处理数据文件: " + srcFilePath + " 创建客户端完成, 耗时: " + TimeLagUtils.formatLagBetween(begin, new Date()));
         begin = new Date();
 
@@ -72,6 +76,15 @@ public class ElasticThread implements Runnable {
         System.out.println("处理数据文件: " + srcFilePath + " 索引数据完成, 耗时: " + TimeLagUtils.formatLagBetween(begin, new Date()));
         elasticClient.close();
         System.out.println("处理数据文件: " + srcFilePath + " 完成.");
+    }
+
+    public String getElasticCluster() {
+        return elasticCluster;
+    }
+
+    public ElasticThread setElasticCluster(String elasticCluster) {
+        if (elasticCluster != null) this.elasticCluster = elasticCluster;
+        return this;
     }
 
     public String getElasticHost() {
