@@ -12,11 +12,11 @@ import java.util.concurrent.Executors;
 
 import org.n3r.config.impl.DefaultConfigable;
 import org.n3r.config.impl.PropertiesConfigable;
+import org.n3r.core.lang.Pair;
 import org.n3r.elastic.iface.FileLineReader;
 import org.n3r.elastic.thread.ElasticThread;
 import org.n3r.elastic.utils.ElasticUtils;
 import org.n3r.elastic.utils.TimeLagUtils;
-import org.n3r.lang.Pair;
 import org.springframework.core.io.Resource;
 
 import com.alibaba.fastjson.JSON;

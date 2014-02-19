@@ -16,7 +16,6 @@ public class ElasticMain {
         } else if (ElasticArgs.IDX_PARAM.equalsIgnoreCase(args[0])) {
             new ElasticIndexer().execute(params);
         }
-        return;
     }
 
 }

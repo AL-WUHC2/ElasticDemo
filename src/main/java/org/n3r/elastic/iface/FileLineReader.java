@@ -1,6 +1,6 @@
 package org.n3r.elastic.iface;
 
-import org.n3r.lang.Pair;
+import org.n3r.core.lang.Pair;
 
 public interface FileLineReader {
 

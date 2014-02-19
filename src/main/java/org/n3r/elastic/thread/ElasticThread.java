@@ -13,11 +13,11 @@ import java.util.Date;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.n3r.core.lang.Pair;
 import org.n3r.elastic.iface.FileLineReader;
 import org.n3r.elastic.utils.TimeLagUtils;
-import org.n3r.lang.Pair;
-import org.phw.core.exception.BusinessException;
 
+import com.google.common.base.Throwables;
 import com.google.common.io.Closeables;
 public class ElasticThread implements Runnable {
 
@@ -60,11 +60,11 @@ public class ElasticThread implements Runnable {
                 lineNumber++;
             }
         } catch (FileNotFoundException e) {
-            throw new BusinessException("File: " + srcFilePath + " Not Found!", e);
+            throw Throwables.propagate(e);
         } catch (IOException e) {
-            throw new BusinessException("Read file: " + srcFilePath + " failed!", e);
+            throw Throwables.propagate(e);
         } catch (Exception e) {
-            throw new BusinessException(e);
+            throw Throwables.propagate(e);
         } finally {
             Closeables.closeQuietly(br);
         }
