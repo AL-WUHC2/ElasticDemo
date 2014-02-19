@@ -2,6 +2,10 @@ package org.n3r.elastic;
 
 public class ElasticArgs {
 
+    public final static String GEN_PARAM = "gen";
+
+    public final static String IDX_PARAM = "idx";
+
     public final static String FILE_ARG = "-file";
 
     public final static String CONF_ARG = "-conf";
