@@ -36,22 +36,25 @@ public class ElasticGenerator {
             String keyFilePath = generateFilePath + "-key" + keyFileType;
             keyBw = createFileWriter(keyFilePath, false);
             keyBw.append(keyName + lineSeparator);
-            for (int key = 0; key < keyCount && key < MAX_KEY_COUNT; key++) {
-                keyBw.append(randNum(6) + alignRight(toStr(key), 5, '0') + lineSeparator);
+            int keyBit = ElasticUtils.decimalBits(keyCount);
+            for (int key = 0; key < keyCount; key++) {
+                keyBw.append(randNum(6) + alignRight(toStr(key), keyBit, '0') + lineSeparator);
             }
             Closeables.closeQuietly(keyBw);
 
-            for (int file = 0; file < fileCount && file < MAX_FILE_COUNT; file++) {
+            for (int file = 0; file < fileCount; file++) {
                 String filePath = generateFilePath + (fileCount == 1 ? "" : "-" + file) + generateFileType;
 
                 // write generate file.
                 bw = createFileWriter(filePath, false);
                 // id重复的次数代表一次大量插入或更新次数
-                for (int idr = 0; idr < idRepeat && idr < MAX_ID_REPEAT; idr++) {
-                    String state = alignRight(toStr(idr), 2, '0'); // 每次重复id状态都更新
+                int idBit = ElasticUtils.decimalBits(idRepeat) + 1;
+                for (int idr = 0; idr < idRepeat; idr++) {
+                    String state = alignRight(toStr(idr), idBit, '0'); // 每次重复id状态都更新
                     // key重复的次数代表同一个关键字对应id的最大数量
-                    for (int keyr = 0; keyr < keyRepeat && keyr < MAX_KEY_REPEAT; keyr++) {
-                        String idPrefix = alignLeft(toStr(keyr), 2, '0');
+                    keyBit = ElasticUtils.decimalBits(keyRepeat) + 1;
+                    for (int keyr = 0; keyr < keyRepeat; keyr++) {
+                        String idPrefix = alignLeft(toStr(keyr), keyBit, '0');
 
                         keyBr = createFileReader(keyFilePath);
                         keyBr.readLine(); // keyName line
@@ -87,14 +90,6 @@ public class ElasticGenerator {
 
     private String generateFilePath;
 
-    private final static int MAX_FILE_COUNT = 20;
-
-    private final static int MAX_KEY_COUNT = 100000;
-
-    private final static int MAX_ID_REPEAT = 10;
-
-    private final static int MAX_KEY_REPEAT = 10;
-
     private final static String lineSeparator = System.getProperty("line.separator");
 
     private final static String keyFileType = ".csv";
@@ -124,7 +119,7 @@ public class ElasticGenerator {
             } else if (ElasticArgs.KEY_REPEAT_ARG.equalsIgnoreCase(args[i])) {
                 keyRepeat = toInteger(args[i + 1], keyRepeat);
             } else if (ElasticArgs.KEY_NAME_ARG.equalsIgnoreCase(args[i])) {
-                keyName = toStr(args[i + 1], keyName);
+                keyName = args[i + 1];
             }
         }
 

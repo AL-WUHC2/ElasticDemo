@@ -22,13 +22,13 @@ import com.google.common.io.Closeables;
 
 public class ElasticThread implements Runnable {
 
+    private TransportClient elasticClient;
+
     private String elasticCluster = getStr("elasticCluster");
 
     private String elasticHost = getStr("elasticHost");
 
     private int elasticPort = getInt("elasticPort");
-
-    private TransportClient elasticClient;
 
     private String elasticIndex = getStr("elasticIndex");
 
@@ -101,7 +101,7 @@ public class ElasticThread implements Runnable {
     }
 
     public ElasticThread setElasticPort(int elasticPort) {
-        if (elasticPort < 0) this.elasticPort = elasticPort;
+        if (elasticPort >= 0) this.elasticPort = elasticPort;
         return this;
     }
 

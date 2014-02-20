@@ -1,7 +1,6 @@
 package org.n3r.elastic;
 
-import static org.n3r.config.Config.getInt;
-import static org.n3r.config.Config.getStr;
+import static org.n3r.core.lang.RStr.toInteger;
 import static org.n3r.core.lang.RStr.toStr;
 
 import java.io.IOException;
@@ -30,16 +29,16 @@ public class ElasticIndexer {
 
         System.out.println("提交Elastic索引数据开始.");
         Date begin = new Date();
-        ExecutorService pool = Executors.newFixedThreadPool(getConfigInt("elasticThreadCount", defaultPoolSize));
+        ExecutorService pool = Executors.newFixedThreadPool(extConf.getInt("elasticThreadCount", defaultPoolSize));
         try {
             Resource[] srcResources = ElasticUtils.getFileResources(srcFilePathPattern);
             for (Resource src : srcResources) {
                 pool.execute(new ElasticThread().setSrcFilePath(src.getFile().getAbsolutePath())
-                        .setElasticCluster(getConfigStr("elasticCluster"))
-                        .setElasticHost(getConfigStr("elasticHost"))
-                        .setElasticPort(getConfigInt("elasticPort"))
-                        .setElasticIndex(getConfigStr("elasticIndex"))
-                        .setElasticType(getConfigStr("elasticType"))
+                        .setElasticCluster(extConf.getStr("elasticCluster", cluster))
+                        .setElasticHost(extConf.getStr("elasticHost", host))
+                        .setElasticPort(extConf.getInt("elasticPort", port))
+                        .setElasticIndex(extConf.getStr("elasticIndex", index))
+                        .setElasticType(extConf.getStr("elasticType", type))
                         .setLineReader(lineReader));
             }
         } catch (IOException e) {
@@ -49,6 +48,16 @@ public class ElasticIndexer {
             System.out.println("提交Elastic索引数据完成, 耗时: " + TimeLagUtils.formatLagBetween(begin, new Date()));
         }
     }
+
+    private String cluster;
+
+    private String host;
+
+    private int port = -1;
+
+    private String index;
+
+    private String type;
 
     private String srcFilePathPattern = null;
 
@@ -81,6 +90,16 @@ public class ElasticIndexer {
                 srcFilePathPattern = args[i + 1];
             } else if (ElasticArgs.CONF_ARG.equalsIgnoreCase(args[i])) {
                 extendConfigFile = args[i + 1];
+            } else if (ElasticArgs.CLUSTER_ARG.equalsIgnoreCase(args[i])) {
+                cluster = args[i + 1];
+            } else if (ElasticArgs.HOST_ARG.equalsIgnoreCase(args[i])) {
+                host = args[i + 1];
+            } else if (ElasticArgs.PORT_ARG.equalsIgnoreCase(args[i])) {
+                port = toInteger(args[i + 1], port);
+            } else if (ElasticArgs.INDEX_ARG.equalsIgnoreCase(args[i])) {
+                index = args[i + 1];
+            } else if (ElasticArgs.TYPE_ARG.equalsIgnoreCase(args[i])) {
+                type = args[i + 1];
             }
         }
 
@@ -97,18 +116,6 @@ public class ElasticIndexer {
         }
 
         return true;
-    }
-
-    private int getConfigInt(String key) {
-        return extConf.getInt(key, getInt(key));
-    }
-
-    private int getConfigInt(String key, int defValue) {
-        return extConf.getInt(key, getInt(key, defValue));
-    }
-
-    private String getConfigStr(String key) {
-        return extConf.getStr(key, getStr(key));
     }
 
 }

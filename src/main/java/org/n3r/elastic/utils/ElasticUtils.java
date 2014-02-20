@@ -52,4 +52,8 @@ public class ElasticUtils {
         return bean;
     }
 
+    public static int decimalBits(int number) {
+        return (int) Math.ceil(Math.log10(number));
+    }
+
 }
