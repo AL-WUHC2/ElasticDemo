@@ -6,7 +6,7 @@ public class ElasticMain {
 
     public static void main(String[] args) {
         if (args.length <= 0) {
-            System.out.println("未指定参数。");
+            new ElasticHelper().execute(new String[]{});
             return;
         }
 
@@ -15,7 +15,7 @@ public class ElasticMain {
             new ElasticGenerator().execute(params);
         } else if (ElasticArgs.IDX_PARAM.equalsIgnoreCase(args[0])) {
             new ElasticIndexer().execute(params);
-        } else if (ElasticArgs.HLP_PARAM.equalsIgnoreCase(args[0])) {
+        } else {
             new ElasticHelper().execute(params);
         }
     }

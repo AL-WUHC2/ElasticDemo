@@ -19,7 +19,8 @@ public class BufferedIOUtils {
     public static BufferedWriter createFileWriter(String filePath, boolean append) throws IOException {
         File file = new File(filePath);
         if (!file.exists()) {
-            new File(file.getParent()).mkdirs();
+            String parent = file.getParent();
+            if (parent != null) new File(parent).mkdirs();
             file.createNewFile();
         }
         return new BufferedWriter(new FileWriter(file, append));

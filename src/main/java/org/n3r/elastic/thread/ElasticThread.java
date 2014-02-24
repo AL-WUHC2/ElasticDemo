@@ -52,6 +52,7 @@ public class ElasticThread implements Runnable {
         System.out.println("处理数据文件: " + srcFilePath + " 创建客户端完成, 耗时: " + TimeLagUtils.formatLagBetween(begin, new Date()));
         begin = new Date();
 
+        System.out.println("处理数据文件: " + srcFilePath + " 索引数据开始.");
         BufferedReader br = null;
         try {
             br = createFileReader(srcFilePath);
