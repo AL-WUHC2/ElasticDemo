@@ -11,6 +11,7 @@ import static org.n3r.elastic.utils.BufferedIOUtils.createFileWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.n3r.elastic.bean.ElasticBean;
@@ -42,6 +43,7 @@ public class ElasticGenerator {
             }
             Closeables.closeQuietly(keyBw);
 
+            String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
             for (int file = 0; file < fileCount; file++) {
                 String filePath = generateFilePath + (fileCount == 1 ? "" : "-" + file) + generateFileType;
 
@@ -60,7 +62,8 @@ public class ElasticGenerator {
                         keyBr.readLine(); // keyName line
                         String key = keyBr.readLine();
                         while (key != null) {
-                            ElasticBean random = ElasticUtils.randomElasticBean(idPrefix + key, key, state);
+                            // ID = 关键字重复标识 + 时间戳 + 关键字
+                            ElasticBean random = ElasticUtils.randomElasticBean(idPrefix + timeStamp + key, key, state);
                             bw.append(JSON.toJSONString(random) + lineSeparator);
                             key = keyBr.readLine();
                         }
@@ -103,10 +106,12 @@ public class ElasticGenerator {
         }
 
         for (int i = 0; i < args.length; i += 2) {
+            System.out.println("指定参数: " + args[i]);
             if (i + 1 >= args.length) {
                 System.out.println("参数数量错误。");
                 return false;
             }
+            System.out.println("  ------  " + args[i + 1]);
 
             if (ElasticArgs.FILE_ARG.equalsIgnoreCase(args[i])) {
                 generateFilePath = args[i + 1];

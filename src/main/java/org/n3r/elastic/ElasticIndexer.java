@@ -84,10 +84,12 @@ public class ElasticIndexer {
 
         String extendConfigFile = null;
         for (int i = 0; i < args.length; i += 2) {
+            System.out.println("指定参数: " + args[i]);
             if (i + 1 >= args.length) {
                 System.out.println("参数数量错误。");
                 return false;
             }
+            System.out.println("  ------  " + args[i + 1]);
 
             if (ElasticArgs.FILE_ARG.equalsIgnoreCase(args[i])) {
                 srcFilePathPattern = args[i + 1];
