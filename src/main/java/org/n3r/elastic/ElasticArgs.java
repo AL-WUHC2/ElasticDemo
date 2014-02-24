@@ -32,4 +32,6 @@ public class ElasticArgs {
 
     public final static String TYPE_ARG = "-type";
 
+    public final static String BULKNUM_ARG = "-bulknum";
+
 }

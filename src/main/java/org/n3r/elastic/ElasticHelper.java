@@ -25,6 +25,7 @@ public class ElasticHelper {
         System.out.println("              -port:      指定Elastic节点端口, 默认为9300");
         System.out.println("              -index:     指定Elastic节点索引名, 默认为rocket");
         System.out.println("              -type:      指定Elastic节点索引数据类型名, 默认为original");
+        System.out.println("              -bulknum:   指定Elastic批量提交索引的数量, 默认为1");
         System.out.println();
         System.out.println("        help: 打印帮助文档");
     }

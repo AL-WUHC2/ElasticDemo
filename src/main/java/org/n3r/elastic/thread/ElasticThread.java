@@ -2,6 +2,7 @@ package org.n3r.elastic.thread;
 
 import static org.n3r.config.Config.getInt;
 import static org.n3r.config.Config.getStr;
+import static org.n3r.core.lang.RStr.isNotEmpty;
 import static org.n3r.core.lang.RStr.toStr;
 import static org.n3r.elastic.utils.BufferedIOUtils.createFileReader;
 
@@ -10,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -34,6 +36,8 @@ public class ElasticThread implements Runnable {
 
     private String elasticType = getStr("elasticType");
 
+    private int elasticBulkNum = getInt("elasticBulkNum");
+
     private String srcFilePath;
 
     private FileLineReader lineReader = new FileLineReader() {
@@ -57,12 +61,35 @@ public class ElasticThread implements Runnable {
         try {
             br = createFileReader(srcFilePath);
             String lineContent = br.readLine();
-            long lineNumber = 1;
-            while (lineContent != null) {
-                Pair<String, byte[]> obj = lineReader.readLine(lineNumber, lineContent);
-                elasticClient.prepareIndex(elasticIndex, elasticType, obj.getFirst()).setSource(obj.getSecond()).execute().actionGet();
+            long readedLine = 0;
+
+            BulkRequestBuilder brb = elasticClient.prepareBulk();
+            Date loopTimer = new Date();
+            long bulkedLine = 0;
+
+            while (isNotEmpty(lineContent)) {
+                readedLine++;
+                Pair<String, byte[]> obj = lineReader.readLine(readedLine, lineContent);
+                brb.add(elasticClient.prepareIndex(elasticIndex, elasticType, obj.getFirst()).setSource(obj.getSecond()));
+                if (readedLine % elasticBulkNum == 0) {
+                    brb.execute().actionGet();
+                    if (elasticBulkNum > 1) {
+                        System.out.println("处理数据文件: " + srcFilePath + " 索引" + (readedLine - bulkedLine) +
+                                "条数据完成, 耗时: " + TimeLagUtils.formatLagBetween(loopTimer, new Date()));
+                        loopTimer = new Date();
+                        bulkedLine = readedLine;
+                    }
+                }
+
                 lineContent = br.readLine();
-                lineNumber++;
+            }
+
+            if (bulkedLine < readedLine) {
+                brb.execute().actionGet();
+                if (elasticBulkNum > 1) {
+                    System.out.println("处理数据文件: " + srcFilePath + " 索引" + (readedLine - bulkedLine) +
+                            "条数据完成, 耗时: " + TimeLagUtils.formatLagBetween(loopTimer, new Date()));
+                }
             }
         } catch (FileNotFoundException e) {
             throw Throwables.propagate(e);
@@ -121,6 +148,15 @@ public class ElasticThread implements Runnable {
 
     public ElasticThread setElasticType(String elasticType) {
         if (elasticType != null) this.elasticType = elasticType;
+        return this;
+    }
+
+    public int getElasticBulkNum() {
+        return elasticBulkNum;
+    }
+
+    public ElasticThread setElasticBulkNum(int elasticBulkNum) {
+        if (elasticBulkNum >= 1) this.elasticBulkNum = elasticBulkNum;
         return this;
     }
 

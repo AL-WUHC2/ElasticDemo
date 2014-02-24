@@ -39,6 +39,7 @@ public class ElasticIndexer {
                         .setElasticPort(extConf.getInt("elasticPort", port))
                         .setElasticIndex(extConf.getStr("elasticIndex", index))
                         .setElasticType(extConf.getStr("elasticType", type))
+                        .setElasticBulkNum(extConf.getInt("elasticBulkNum", bulkNum))
                         .setLineReader(lineReader));
             }
         } catch (IOException e) {
@@ -58,6 +59,8 @@ public class ElasticIndexer {
     private String index;
 
     private String type;
+
+    private int bulkNum = 0;
 
     private String srcFilePathPattern = null;
 
@@ -100,6 +103,8 @@ public class ElasticIndexer {
                 index = args[i + 1];
             } else if (ElasticArgs.TYPE_ARG.equalsIgnoreCase(args[i])) {
                 type = args[i + 1];
+            } else if (ElasticArgs.BULKNUM_ARG.equalsIgnoreCase(args[i])) {
+                bulkNum = toInteger(args[i + 1], bulkNum);
             }
         }
 
