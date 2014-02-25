@@ -74,6 +74,7 @@ public class ElasticThread implements Runnable {
                 brb.add(elasticClient.prepareIndex(elasticIndex, elasticType, obj.getFirst()).setSource(obj.getSecond()));
                 if (readedLine % elasticBulkNum == 0) {
                     BulkResponse bulkResult = brb.execute().actionGet();
+                    brb = elasticClient.prepareBulk();
                     if (elasticBulkNum > 1) {
                         System.out.println("处理数据文件: " + srcFilePath + " 索引" + (readedLine - bulkedLine) +
                                 "条数据完成, 耗时: " + TimeLagUtils.formatLagBetween(loopTimer, new Date()));
