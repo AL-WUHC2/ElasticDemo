@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -72,12 +73,16 @@ public class ElasticThread implements Runnable {
                 Pair<String, byte[]> obj = lineReader.readLine(readedLine, lineContent);
                 brb.add(elasticClient.prepareIndex(elasticIndex, elasticType, obj.getFirst()).setSource(obj.getSecond()));
                 if (readedLine % elasticBulkNum == 0) {
-                    brb.execute().actionGet();
+                    BulkResponse bulkResult = brb.execute().actionGet();
                     if (elasticBulkNum > 1) {
                         System.out.println("处理数据文件: " + srcFilePath + " 索引" + (readedLine - bulkedLine) +
                                 "条数据完成, 耗时: " + TimeLagUtils.formatLagBetween(loopTimer, new Date()));
                         loopTimer = new Date();
                         bulkedLine = readedLine;
+                    }
+                    if (bulkResult.hasFailures()) {
+                        System.out.println("处理数据文件: " + srcFilePath + " 索引发生失败, 失败信息: " +
+                                bulkResult.buildFailureMessage());
                     }
                 }
 
