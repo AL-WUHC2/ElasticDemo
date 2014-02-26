@@ -4,9 +4,7 @@ import static org.n3r.core.text.RRand.randChinese;
 import static org.n3r.core.text.RRand.randDateBetween;
 import static org.n3r.core.text.RRand.randLetters;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import org.n3r.core.date4j.DateTime;
 import org.n3r.elastic.bean.ElasticBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -35,18 +33,18 @@ public class ElasticUtils {
         }
     }
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    private static String formatter = "YYYY-MM-DDThh:mm:ss.fffZ";
 
-    private static Date startDate = new Date(1356969600000L); // 20130101 000000000
+    private static DateTime startDate = new DateTime("2013-01-01 00:00:00.000000000");
 
-    private static Date endDate = new Date(1388462399999L); // 20131231 115959999
+    private static DateTime endDate = new DateTime("2013-12-31 11:59:59.999999999");
 
     public static ElasticBean randomElasticBean(String id, String key, String state) {
         ElasticBean bean = new ElasticBean();
         bean.setId(id);
         bean.setKey(key);
         bean.setState(state);
-        bean.setDate(sdf.format(randDateBetween(startDate, endDate)));
+        bean.setDate(randDateBetween(startDate, endDate).format(formatter));
         bean.setContentEng(randLetters(8));
         bean.setContentChs(randChinese(8));
         return bean;

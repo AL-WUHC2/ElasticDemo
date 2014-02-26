@@ -1,12 +1,11 @@
 package org.n3r.core.text;
 
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.n3r.core.date4j.DateTime;
 import org.n3r.core.joou.ULong;
 
 public class RRand {
@@ -63,26 +62,27 @@ public class RRand {
 
     private static final long LAST_DATE_TIME = 2524535999000L;
 
-    public static Date randFutureDate() {
-        return randDateBetween(new Date(), new Date(LAST_DATE_TIME));
+    public static DateTime randFutureDate() {
+        return randDateBetween(DateTime.now(TIME_ZONE), DateTime.forInstant(LAST_DATE_TIME, TIME_ZONE));
     }
 
-    public static Date randPastDate() {
-        return randDateBetween(new Date(0), new Date());
+    public static DateTime randPastDate() {
+        return randDateBetween(DateTime.forInstant(0L, TIME_ZONE), DateTime.now(TIME_ZONE));
     }
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd HHmmssSSS");
+    private static final TimeZone TIME_ZONE = TimeZone.getDefault();
 
-    public static Date randDateBetween(String start, String end) throws ParseException {
-        return randDateBetween(DATE_FORMAT.parse(start), DATE_FORMAT.parse(end));
+    public static DateTime randDateBetween(String start, String end) {
+        return randDateBetween(new DateTime(start), new DateTime(end));
     }
 
-    public static Date randDateBetween(Date start, Date end) {
-        long interval = end.getTime() - start.getTime();
-        if (interval < 1) return new Date(start.getTime());
+    public static DateTime randDateBetween(DateTime start, DateTime end) {
+        long startMs = start.getMilliseconds(TIME_ZONE);
+        long interval = end.getMilliseconds(TIME_ZONE) - startMs;
+        if (interval < 1) return DateTime.forInstant(startMs, TIME_ZONE);
 
         long increment = randLong() & interval;
-        return new Date(start.getTime() + increment);
+        return DateTime.forInstant(startMs + increment, TIME_ZONE);
     }
 
     private final static char[] CHINESE_LEVELONE = RChinese.levelOne().toCharArray();
