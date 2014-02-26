@@ -31,7 +31,7 @@ public class RRand {
     public static int randInt() {
         return RANDOM.nextInt();
     }
-    
+
     public static int randInt(int n) {
         return RANDOM.nextInt(n);
     }
@@ -81,7 +81,7 @@ public class RRand {
         long interval = end.getTime() - start.getTime();
         if (interval < 1) return new Date(start.getTime());
 
-        long increment = randLong() % (interval + 1);
+        long increment = randLong() & interval;
         return new Date(start.getTime() + increment);
     }
 
@@ -109,7 +109,7 @@ public class RRand {
      * end are chosen.</p>
      *
      * <p>This method accepts a user-supplied {@link Random}
-     * instance to use as a source of randomness. By seeding a single 
+     * instance to use as a source of randomness. By seeding a single
      * {@link Random} instance with a fixed seed and using it for each call,
      * the same random sequence of strings can be generated repeatedly
      * and predictably.</p>
@@ -129,7 +129,7 @@ public class RRand {
      * @since 2.0
      */
     public static String random(int count, int start, int end, boolean letters, boolean numbers,
-                                char[] chars, Random random) {
+            char[] chars, Random random) {
         if (count == 0) {
             return "";
         } else if (count < 0) {
@@ -147,7 +147,7 @@ public class RRand {
                     end = Integer.MAX_VALUE;
                 } else {
                     end = 'z' + 1;
-                    start = ' ';                
+                    start = ' ';
                 }
             }
         } else {
